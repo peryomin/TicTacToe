@@ -136,7 +136,6 @@ public final class State {
                     counter++;
                 }
                 if (counter == N_IN_A_ROW) {
-
                     return field[i + j][j];
                 }
                 prevCell = curCell;
