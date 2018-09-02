@@ -42,18 +42,18 @@ public class StateTest {
                 .applyMove(new Move(1, 4)).applyMove(new Move(8, 4))
                 .applyMove(new Move(2, 6)).applyMove(new Move(7, 3));
 
-        assertEquals(state.applyMove(new Move(0, 9)).isTerminal(), player + 1);
-        assertEquals(state.applyMove(new Move(1, 7)).isTerminal(), player + 1);
-        assertEquals(state.applyMove(new Move(9, 9)).isTerminal(), player + 1);
-        assertEquals(state.applyMove(new Move(5, 0)).isTerminal(), player + 1);
-        assertEquals(state.applyMove(new Move(0, 6)).isTerminal(), 0);
+        assertEquals(player + 1, state.applyMove(new Move(0, 9)).isTerminal());
+        assertEquals(player + 1, state.applyMove(new Move(1, 7)).isTerminal());
+        assertEquals(player + 1, state.applyMove(new Move(9, 9)).isTerminal());
+        assertEquals(player + 1, state.applyMove(new Move(5, 0)).isTerminal());
+        assertEquals(0, state.applyMove(new Move(0, 6)).isTerminal());
 
         state = state.applyMove(new Move(9, 0));
-        assertEquals(state.applyMove(new Move(0, 6)).isTerminal(), 0);
+        assertEquals(0, state.applyMove(new Move(0, 6)).isTerminal());
         player ^= 1;
-        assertEquals(state.applyMove(new Move(5, 5)).isTerminal(), player + 1);
-        assertEquals(state.applyMove(new Move(4, 4)).isTerminal(), player + 1);
-        assertEquals(state.applyMove(new Move(9, 9)).isTerminal(), player + 1);
-        assertEquals(state.applyMove(new Move(4, 3)).isTerminal(), player + 1);
+        assertEquals(player + 1, state.applyMove(new Move(5, 5)).isTerminal());
+        assertEquals(player + 1, state.applyMove(new Move(4, 4)).isTerminal());
+        assertEquals(player + 1, state.applyMove(new Move(9, 9)).isTerminal());
+        assertEquals(player + 1, state.applyMove(new Move(4, 3)).isTerminal());
     }
 }
