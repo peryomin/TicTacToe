@@ -1,6 +1,7 @@
 package main.java.com.peryomin.tictactoe;
 
 import main.java.com.peryomin.tictactoe.players.*;
+import main.java.com.peryomin.tictactoe.players.ai.AI;
 
 public class TicTacToe {
     public static void main(String[] args) {

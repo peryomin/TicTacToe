@@ -40,7 +40,7 @@ public final class State {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (field[i][j] == EMPTY_CELL) {
-                    result.add(new Move(i, j));
+                    result.add(new Move(j, i));
                 }
             }
         }
