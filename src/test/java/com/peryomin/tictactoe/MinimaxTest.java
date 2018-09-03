@@ -16,27 +16,29 @@ public class MinimaxTest {
 
         int expectedCallCounter;
 
-        for (int i = 0; i < 100; i++) {
-            expectedCallCounter = 1;
+        for (int i = 0; i < State.N; i++) {
+            for (int j = 0; j < State.N; j++) {
+                expectedCallCounter = 1;
+                TestEvaluationState.callCounter = 0;
 
-            for (int k = 0; k < Minimax.MAX_DEPTH; k++) {
-                expectedCallCounter *= currentState.getLegalMoves().size() - k;
+                for (int k = 0; k < Minimax.MAX_DEPTH; k++) {
+                    expectedCallCounter *= currentState.getLegalMoves().size() - k;
+                }
+
+                int curPlayer = currentState.getPlayerToMove();
+                Move move = players[curPlayer].getMove(currentState);
+                currentState = currentState.applyMove(move);
+
+                currentState.printState();
+
+                assertEquals(curPlayer + 1, currentState.getField()[i][j]);
+
+                System.out.println(expectedCallCounter + " - expectedCallCounter");
+                System.out.println(TestEvaluationState.callCounter + " - TestEvaluationState.callCounter");
+                System.out.println("-----------------");
+
+                assertEquals(expectedCallCounter, TestEvaluationState.callCounter);
             }
-
-            int curPlayer = currentState.getPlayerToMove();
-            Move move = players[curPlayer].getMove(currentState);
-            currentState = currentState.applyMove(move);
-
-            currentState.printState();
-            System.out.println("-----------------");
-
-            assertEquals(curPlayer + 1, currentState.getField()[0][i % State.N]);
-
-            System.out.println(expectedCallCounter);
-            System.out.println(TestEvaluationState.callCounter);
-
-            assertEquals(expectedCallCounter, TestEvaluationState.callCounter);
-            TestEvaluationState.callCounter = 0;
         }
     }
 
