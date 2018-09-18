@@ -142,211 +142,63 @@ public final class State {
 
     /**
      * Prints current state with the allotted winner to console
-     * @param winner player
      */
-    public void printWinnerCombo(int winner) {
+    public void printWinnerCombo() {
         int[][] curField = getField();
-        int upperSymbol = 3;
-        // Checking horizontal lines
-        int prevCell = EMPTY_CELL;
-        int curCell = EMPTY_CELL;
-        int counter = 0;
+        int upperSymbol = 2;
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                curCell = field[i][j];
-                if (j == 0) {
-                    prevCell = curCell;
-                }
-                if (prevCell != curCell) {
-                    counter = 0;
-                }
-                if (curCell != EMPTY_CELL) {
-                    counter++;
-                }
-                if (counter == N_IN_A_ROW) {
-                    for (int k = j; k > j - N_IN_A_ROW; k--) {
-                        curField[i][k] = upperSymbol;
+                for (int player = CROSS; player <= ZERO; player++) {
+                    if (j + 4 < N && curField[i][j] == player && curField[i][j + 1] == player && curField[i][j + 2] == player
+                            && curField[i][j + 3] == player && curField[i][j + 4] == player) {
+                        curField[i][j]     = upperSymbol + player;
+                        curField[i][j + 1] = upperSymbol + player;
+                        curField[i][j + 2] = upperSymbol + player;
+                        curField[i][j + 3] = upperSymbol + player;
+                        curField[i][j + 4] = upperSymbol + player;
+                    }
+                    if (j + 4 < N && curField[j][i] == player && curField[j + 1][i] == player && curField[j + 2][i] == player
+                            && curField[j + 3][i] == player && curField[j + 4][i] == player) {
+                        curField[j][i]     = upperSymbol + player;
+                        curField[j + 1][i] = upperSymbol + player;
+                        curField[j + 2][i] = upperSymbol + player;
+                        curField[j + 3][i] = upperSymbol + player;
+                        curField[j + 4][i] = upperSymbol + player;
+                    }
+                    if (i + 4 < N && j + 4 < N && field[i][j] == player && curField[i + 1][j + 1] == player
+                            && curField[i + 2][j + 2] == player && curField[i + 3][j + 3] == player && curField[i + 4][j + 4] == player) {
+                        curField[i][j]         = upperSymbol + player;
+                        curField[i + 1][j + 1] = upperSymbol + player;
+                        curField[i + 2][j + 2] = upperSymbol + player;
+                        curField[i + 3][j + 3] = upperSymbol + player;
+                        curField[i + 4][j + 4] = upperSymbol + player;
+                    }
+                    if (j - 4 >= 0 && i + 4 < N && curField[i][j] == player  && curField[i + 1][j - 1] == player &&
+                            curField[i + 2][j - 2] == player && curField[i + 3][j - 3] == player && curField[i + 4][j - 4] == player) {
+                        curField[i][j]         = upperSymbol + player;
+                        curField[i + 1][j - 1] = upperSymbol + player;
+                        curField[i + 2][j - 2] = upperSymbol + player;
+                        curField[i + 3][j - 3] = upperSymbol + player;
+                        curField[i + 4][j - 4] = upperSymbol + player;
                     }
                 }
-                prevCell = curCell;
             }
-            counter = 0;
-        }
-        // Checking vertical lines
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                curCell = field[j][i];
-                if (j == 0) {
-                    prevCell = curCell;
-                }
-                if (prevCell != curCell) {
-                    counter = 0;
-                }
-                if (curCell != EMPTY_CELL) {
-                    counter++;
-                }
-                if (counter == N_IN_A_ROW) {
-                    for (int k = j; k > j - N_IN_A_ROW; k--) {
-                        curField[k][i] = upperSymbol;
-                    }
-                }
-                prevCell = curCell;
-            }
-            prevCell = EMPTY_CELL;
-            counter = 0;
-        }
-        // Checking diagonal lines
-        /* 0  1  2  3  4  5  6  7  8  9
-        0 [#][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-        1 [#][#][ ][ ][ ][ ][ ][ ][ ][ ]
-        2 [#][#][#][ ][ ][ ][ ][ ][ ][ ]
-        3 [#][#][#][#][ ][ ][ ][ ][ ][ ]
-        4 [#][#][#][#][#][ ][ ][ ][ ][ ]
-        5 [#][#][#][#][#][#][ ][ ][ ][ ]
-        6 [ ][#][#][#][#][#][#][ ][ ][ ]
-        7 [ ][ ][#][#][#][#][#][#][ ][ ]
-        8 [ ][ ][ ][#][#][#][#][#][#][ ]
-        9 [ ][ ][ ][ ][#][#][#][#][#][#]
-        */
-        for (int i = 0; i <= N - N_IN_A_ROW; i++) {
-            for (int j = 0; j < N - i; j++) {
-                curCell = field[i + j][j];
-                if (j == 0) {
-                    prevCell = curCell;
-                }
-                if (prevCell != curCell) {
-                    counter = 0;
-                }
-                if (curCell != EMPTY_CELL) {
-                    counter++;
-                }
-                if (counter == N_IN_A_ROW) {
-                    for (int k = j; k > j - N_IN_A_ROW; k--) {
-                        curField[i + k][k] = upperSymbol;
-                    }
-                }
-                prevCell = curCell;
-            }
-            prevCell = EMPTY_CELL;
-            counter = 0;
-        }
-        /* 0  1  2  3  4  5  6  7  8  9
-        0 [ ][#][#][#][#][#][ ][ ][ ][ ]
-        1 [ ][ ][#][#][#][#][#][ ][ ][ ]
-        2 [ ][ ][ ][#][#][#][#][#][ ][ ]
-        3 [ ][ ][ ][ ][#][#][#][#][#][ ]
-        4 [ ][ ][ ][ ][ ][#][#][#][#][#]
-        5 [ ][ ][ ][ ][ ][ ][#][#][#][#]
-        6 [ ][ ][ ][ ][ ][ ][ ][#][#][#]
-        7 [ ][ ][ ][ ][ ][ ][ ][ ][#][#]
-        8 [ ][ ][ ][ ][ ][ ][ ][ ][ ][#]
-        9 [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-        */
-        for (int i = 1; i <= N - N_IN_A_ROW; i++) {
-            for (int j = 0; j < N - i; j ++) {
-                curCell = field[j][i + j];
-                if (j == 0) {
-                    prevCell = curCell;
-                }
-                if (prevCell != curCell) {
-                    counter = 0;
-                }
-                if (curCell != EMPTY_CELL) {
-                    counter++;
-                }
-                if (counter == N_IN_A_ROW) {
-                    for (int k = j; k > j - N_IN_A_ROW; k--) {
-                        curField[k][i + k] = upperSymbol;
-                    }
-                }
-                prevCell = curCell;
-            }
-            prevCell = EMPTY_CELL;
-            counter = 0;
-        }
-        /* 0  1  2  3  4  5  6  7  8  9
-        0 [ ][ ][ ][ ][#][#][#][#][#][#]
-        1 [ ][ ][ ][#][#][#][#][#][#][ ]
-        2 [ ][ ][#][#][#][#][#][#][ ][ ]
-        3 [ ][#][#][#][#][#][#][ ][ ][ ]
-        4 [#][#][#][#][#][#][ ][ ][ ][ ]
-        5 [#][#][#][#][#][ ][ ][ ][ ][ ]
-        6 [#][#][#][#][ ][ ][ ][ ][ ][ ]
-        7 [#][#][#][ ][ ][ ][ ][ ][ ][ ]
-        8 [#][#][ ][ ][ ][ ][ ][ ][ ][ ]
-        9 [#][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-        */
-        for (int i = 0; i <= N - N_IN_A_ROW; i++) {
-            for (int j = 0; j < N - i; j++) {
-                curCell = field[N - 1 - j - i][j];
-                if (j == 0) {
-                    prevCell = curCell;
-                }
-                if (prevCell != curCell) {
-                    counter = 0;
-                }
-                if (curCell != EMPTY_CELL) {
-                    counter++;
-                }
-                if (counter == N_IN_A_ROW) {
-                    for (int k = j; k > j - N_IN_A_ROW; k--) {
-                        curField[N - 1 - k - i][k] = upperSymbol;
-                    }
-                }
-                prevCell = curCell;
-            }
-            prevCell = EMPTY_CELL;
-            counter = 0;
-        }
-        /* 0  1  2  3  4  5  6  7  8  9
-        0 [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
-        1 [ ][ ][ ][ ][ ][ ][ ][ ][ ][#]
-        2 [ ][ ][ ][ ][ ][ ][ ][ ][#][#]
-        3 [ ][ ][ ][ ][ ][ ][ ][#][#][#]
-        4 [ ][ ][ ][ ][ ][ ][#][#][#][#]
-        5 [ ][ ][ ][ ][ ][#][#][#][#][#]
-        6 [ ][ ][ ][ ][#][#][#][#][#][ ]
-        7 [ ][ ][ ][#][#][#][#][#][ ][ ]
-        8 [ ][ ][#][#][#][#][#][ ][ ][ ]
-        9 [ ][#][#][#][#][#][ ][ ][ ][ ]
-        */
-        for (int i = 1; i <= N - N_IN_A_ROW; i++) {
-            for (int j = 0; j < N - i; j ++) {
-                curCell = field[N - 1 - j][j + i];
-                if (j == 0) {
-                    prevCell = curCell;
-                }
-                if (prevCell != curCell) {
-                    counter = 0;
-                }
-                if (curCell != EMPTY_CELL) {
-                    counter++;
-                }
-                if (counter == N_IN_A_ROW) {
-                    for (int k = j; k > j - N_IN_A_ROW; k--) {
-                        curField[N - 1 - k][k + i] = upperSymbol;
-                    }
-                }
-                prevCell = curCell;
-            }
-            prevCell = EMPTY_CELL;
-            counter = 0;
         }
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (curField[i][j] == EMPTY_CELL) {
                     System.out.print("[ ]");
-                } else if (curField[i][j] == upperSymbol) {
-                    System.out.print(winner == 1 ? " X " : " O ");
                 } else if (curField[i][j] == CROSS) {
                     System.out.print("[x]");
-                } else {
+                } else if (curField[i][j] == ZERO) {
                     System.out.print("[o]");
+                } else {
+                    System.out.print(curField[i][j] == upperSymbol + CROSS ? " X " : " O ");
                 }
             }
             System.out.print("\n");
         }
     }
-
 }
