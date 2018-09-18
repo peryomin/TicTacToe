@@ -8,12 +8,16 @@ public final class State {
     public static final int CROSS = 1;
     public static final int ZERO = 2;
     public static final int N = 10;
-    private final int[][] field;
-    private static final int N_IN_A_ROW = 5;
+    private int[][] field;
     private int playerToMove = (int) Math.round(Math.random());
 
     public State() {
         field = new int[N][N];
+    }
+
+    public State(State state) {
+        this.field = state.field;
+        this.playerToMove = state.playerToMove;
     }
 
     private State(int[][] field, int playerToMove) {
@@ -32,6 +36,18 @@ public final class State {
         int player = playerToMove == 0 ? 1 : 0;
 
         return new State(resultField, player);
+    }
+
+    public void makeMove(Move move) {
+        field[move.y][move.x] = playerToMove == 0 ? CROSS : ZERO;
+    }
+
+    /**
+     * Cancel move on the game field
+     * @param move that need to be cancelled
+     */
+    public void takeMove(Move move) {
+        field[move.y][move.x] = EMPTY_CELL;
     }
 
     /**

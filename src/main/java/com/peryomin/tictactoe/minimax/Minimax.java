@@ -36,7 +36,10 @@ public class Minimax {
         int bestMoveIndex = 0;
 
         for (int i = 0; i < legalMoves.size(); i++) {
-            int curMoveScore = minimax(state.applyMove(legalMoves.get(i)), depth, 0, MIN_SCORE, MAX_SCORE);
+            Move curMove = legalMoves.get(i);
+            state.makeMove(curMove);
+            int curMoveScore = minimax(state, depth, 0, MIN_SCORE, MAX_SCORE);
+            state.takeMove(curMove);
             if (!isEnoughTime()) {
                 return null;
             }
@@ -77,7 +80,10 @@ public class Minimax {
         int curPlayer = state.getPlayerToMove();
 
         for (int i = 0; i < legalMoves.size(); i++) {
-            int curMoveScore = minimax(state.applyMove(legalMoves.get(i)), maxDepth, curDepth + 1, alpha, beta);
+            Move curMove = legalMoves.get(i);
+            state.makeMove(curMove);
+            int curMoveScore = minimax(state, maxDepth, curDepth + 1, alpha, beta);
+            state.takeMove(curMove);
             if (curPlayer == 0) {
                 alpha = Math.max(alpha, curMoveScore);
             } else {
@@ -91,12 +97,12 @@ public class Minimax {
     }
 
     /**
-     * Returns the best solution for current player among the legal moves in due time
+     * Controls the duration of evaluation
      * @param state            state for which need to choose the best move
      * @param timeMilliseconds time for move
-     * @return                 the best solution for current player among the legal moves in due time
+     * @return                 the best move for current player among the legal moves in due time
      */
-    public Move iterativeDeeping(State state, long timeMilliseconds) {
+    public Move iterativeDeepening(State state, long timeMilliseconds) {
         startTime = System.currentTimeMillis();
         timeToMove = timeMilliseconds;
         Move bestMove = null;
