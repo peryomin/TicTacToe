@@ -23,6 +23,8 @@ public final class State {
 
     /**
      * Makes a move and returns new state after that move
+     * @param move which need to apply
+     * @return     new state with this move
      */
     public State applyMove(Move move) {
         int[][] resultField = getField();
@@ -40,11 +42,31 @@ public final class State {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (field[i][j] == EMPTY_CELL) {
-                    result.add(new Move(j, i));
+                    if (isCloseEnough(i, j) || (i == N / 2 && j == N / 2)){
+                        result.add(new Move(j, i));
+                    }
                 }
             }
         }
         return result;
+    }
+
+    /**
+     * Check if there are non-empty cells nearby
+     * @param x coordinate of cell
+     * @param y coordinate of cell
+     * @return  true if there are non-empty cells nearby
+     */
+    private boolean isCloseEnough(int x, int y) {
+        int margin = 1;
+        for (int i = Math.max(0, x - margin); i < Math.min(N, y + margin); i++) {
+            for (int j = Math.max(0, x - margin); j < Math.min(N, y + margin); j++) {
+                if (field[i][j] != EMPTY_CELL) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -268,6 +290,10 @@ public final class State {
         }
     }
 
+    /**
+     * Prints current state with the allotted winner to console
+     * @param winner player
+     */
     public void printWinnerCombo(int winner) {
         int[][] curField = getField();
         int upperSymbol = 3;
