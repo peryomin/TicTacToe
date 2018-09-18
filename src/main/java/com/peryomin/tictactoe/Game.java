@@ -32,7 +32,7 @@ public class Game {
             System.out.println("Draw.");
         } else {
             System.out.printf("Winner: %s\n", result == 1 ? "cross" : "zero");
-            currentState.printWinnerCombo(result);
+            currentState.printWinnerCombo();
         }
         return result;
     }

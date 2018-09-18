@@ -2,6 +2,8 @@ package test.java.com.peryomin.tictactoe;
 
 import main.java.com.peryomin.tictactoe.Move;
 import main.java.com.peryomin.tictactoe.State;
+import main.java.com.peryomin.tictactoe.minimax.EvaluationState;
+import main.java.com.peryomin.tictactoe.minimax.Minimax;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -55,5 +57,27 @@ public class StateTest {
         assertEquals(player + 1, state.applyMove(new Move(4, 4)).isTerminal());
         assertEquals(player + 1, state.applyMove(new Move(9, 9)).isTerminal());
         assertEquals(player + 1, state.applyMove(new Move(4, 3)).isTerminal());
+    }
+
+    @Test
+    public void cancelMove() {
+        State state = new State();
+        int player = state.getPlayerToMove();
+
+        state.makeMove(new Move(1, 1));
+        assertEquals(player + 1, state.getField()[1][1]);
+        state.takeMove(new Move(1, 1));
+        assertEquals(State.EMPTY_CELL, state.getField()[1][1]);
+
+        Minimax minimax = new Minimax(new EvaluationState());
+        State correctState = new State(state);
+
+        minimax.iterativeDeepening(state, 5000);
+
+        for (int i = 0; i < State.N; i++) {
+            for (int j = 0; j < State.N; j++) {
+                assertEquals(correctState.getField()[i][j], state.getField()[i][j]);
+            }
+        }
     }
 }

@@ -12,6 +12,6 @@ public class AI implements Player {
 
     @Override
     public Move getMove(State state, long timeMilliseconds) {
-        return minimax.iterativeDeeping(state, timeMilliseconds);
+        return minimax.iterativeDeepening(state, timeMilliseconds);
     }
 }
