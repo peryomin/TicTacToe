@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class Human implements Player {
     @Override
-    public Move getMove(State state) {
+    public Move getMove(State state, long timeMilliseconds) {
         Scanner in = new Scanner(System.in);
         System.out.println("Your move. X coord:");
         int x = in.nextInt();
