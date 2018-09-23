@@ -8,14 +8,14 @@ public class Minimax {
     static final int MAX_SCORE = Integer.MAX_VALUE / 3;
     static final int MIN_SCORE = Integer.MIN_VALUE / 3;
     public static final int MAX_DEPTH = 20;
-
     private EvaluationFunction eval;
-
+    private TranspositionTable tTable;
     private long timeToMove;
     private long startTime;
 
     public Minimax(EvaluationFunction eval) {
         this.eval = eval;
+        tTable = new TranspositionTable();
     }
 
     private boolean isEnoughTime() {
@@ -38,7 +38,7 @@ public class Minimax {
         for (int i = 0; i < legalMoves.size(); i++) {
             Move curMove = legalMoves.get(i);
             state.makeMove(curMove);
-            int curMoveScore = minimax(state, depth, 0, MIN_SCORE, MAX_SCORE);
+            int curMoveScore = minimax(state, depth, MIN_SCORE, MAX_SCORE);
             state.takeMove(curMove);
             if (!isEnoughTime()) {
                 return null;
@@ -61,28 +61,31 @@ public class Minimax {
     /**
      * Returns the best solution for current player among the legal moves
      * @param state    state for which need to choose the best move
-     * @param maxDepth max depth of recursion
      * @param curDepth current depth of recursion
      * @param alpha    alpha score
      * @param beta     beta score
      * @return         evaluation of best move for current player among the legal moves
      */
-    private int minimax(State state, int maxDepth, int curDepth, int alpha, int beta) {
-        if (curDepth >= maxDepth || state.isTerminal() != 0) {
+    private int minimax(State state, int curDepth, int alpha, int beta) {
+        if (curDepth <= 0 || state.isTerminal() != 0) {
             return eval.evalState(state, curDepth);
         }
 
         if (!isEnoughTime()) {
             return 0;
         }
-
+        assert (state.calculateHash() == state.getHash());
+        TranspositionTable.Entry tTableEntry = tTable.get(state.getHash(), curDepth);
+        if (tTableEntry != null) {
+            return tTableEntry.score;
+        }
         ArrayList<Move> legalMoves = new ArrayList<>(state.getLegalMoves());
         int curPlayer = state.getPlayerToMove();
 
         for (int i = 0; i < legalMoves.size(); i++) {
             Move curMove = legalMoves.get(i);
             state.makeMove(curMove);
-            int curMoveScore = minimax(state, maxDepth, curDepth + 1, alpha, beta);
+            int curMoveScore = minimax(state, curDepth - 1, alpha, beta);
             state.takeMove(curMove);
             if (curPlayer == 0) {
                 alpha = Math.max(alpha, curMoveScore);
@@ -93,6 +96,9 @@ public class Minimax {
                 break;
             }
         }
+
+        tTable.put(state.getHash(), curPlayer == 0 ? alpha : beta, curDepth);
+
         return curPlayer == 0 ? alpha : beta;
     }
 

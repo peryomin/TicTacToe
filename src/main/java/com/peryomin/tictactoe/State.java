@@ -2,14 +2,29 @@ package main.java.com.peryomin.tictactoe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public final class State {
     public static final int EMPTY_CELL = 0;
     public static final int CROSS = 1;
     public static final int ZERO = 2;
     public static final int N = 10;
+    private static long[][][] zobristTable;
     private int[][] field;
     private int playerToMove = (int) Math.round(Math.random());
+    private long hash;
+    private int ply = 0;
+
+    static {
+        Random r = new Random(42);
+        zobristTable = new long[N][N][2];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                zobristTable[i][j][0] = r.nextLong();
+                zobristTable[i][j][1] = r.nextLong();
+            }
+        }
+    }
 
     public State() {
         field = new int[N][N];
@@ -18,6 +33,8 @@ public final class State {
     public State(State state) {
         this.field = state.field;
         this.playerToMove = state.playerToMove;
+        this.hash = state.hash;
+        this.ply = state.ply;
     }
 
     private State(int[][] field, int playerToMove) {
@@ -25,21 +42,32 @@ public final class State {
         this.playerToMove = playerToMove;
     }
 
+    public long getHash() {
+        return hash;
+    }
+
+    public int getPly() {
+        return ply;
+    }
+
     /**
      * Makes a move and returns new state after that move
      * @param move which need to apply
      * @return     new state with this move
      */
-    public State applyMove(Move move) {
+    /*public State applyMove(Move move) {
         int[][] resultField = getField();
         resultField[move.y][move.x] = playerToMove == 0 ? CROSS : ZERO;
         int player = playerToMove == 0 ? 1 : 0;
 
         return new State(resultField, player);
-    }
+    }*/
 
     public void makeMove(Move move) {
         field[move.y][move.x] = playerToMove == 0 ? CROSS : ZERO;
+        hash ^= zobristTable[move.y][move.x][playerToMove];
+        swapPlayers();
+        ply++;
     }
 
     /**
@@ -47,7 +75,23 @@ public final class State {
      * @param move that need to be cancelled
      */
     public void takeMove(Move move) {
+        swapPlayers();
+        hash ^= zobristTable[move.y][move.x][playerToMove];
         field[move.y][move.x] = EMPTY_CELL;
+        ply--;
+    }
+
+    public long calculateHash() {
+        long resultHash = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                int curPlayer = field[i][j];
+                if (curPlayer != EMPTY_CELL) {
+                    resultHash ^= zobristTable[i][j][curPlayer - 1];
+                }
+            }
+        }
+        return resultHash;
     }
 
     /**
@@ -69,14 +113,14 @@ public final class State {
 
     /**
      * Check if there are non-empty cells nearby
-     * @param x coordinate of cell
-     * @param y coordinate of cell
+     * @param i1 coordinate of cell
+     * @param j1 coordinate of cell
      * @return  true if there are non-empty cells nearby
      */
-    private boolean isCloseEnough(int x, int y) {
+    private boolean isCloseEnough(int i1, int j1) {
         int margin = 1;
-        for (int i = Math.max(0, x - margin); i < Math.min(N, y + margin); i++) {
-            for (int j = Math.max(0, x - margin); j < Math.min(N, y + margin); j++) {
+        for (int i = Math.max(0, i1 - margin); i <= Math.min(N - 1, i1 + margin); i++) {
+            for (int j = Math.max(0, j1 - margin); j <= Math.min(N - 1, j1 + margin); j++) {
                 if (field[i][j] != EMPTY_CELL) {
                     return true;
                 }
@@ -142,7 +186,9 @@ public final class State {
      * Prints current state to console
      */
     public void printState() {
+        System.out.println("   0  1  2  3  4  5  6  7  8  9");
         for (int i = 0; i < N; i++) {
+            System.out.print(i + " ");
             for (int j = 0; j < N; j++) {
                 if (field[i][j] == EMPTY_CELL) {
                     System.out.print("[ ]");
@@ -216,5 +262,9 @@ public final class State {
             }
             System.out.print("\n");
         }
+    }
+
+    private void swapPlayers() {
+        playerToMove ^= 1;
     }
 }

@@ -7,11 +7,10 @@ public class Human implements Player {
     @Override
     public Move getMove(State state, long timeMilliseconds) {
         Scanner in = new Scanner(System.in);
-        System.out.println("Your move. X coord:");
+        System.out.println("Human move: ");
         int x = in.nextInt();
-        System.out.println("Y coord:");
         int y = in.nextInt();
 
-        return new Move(--x, --y);
+        return new Move(x, y);
     }
 }
