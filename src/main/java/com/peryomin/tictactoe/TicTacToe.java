@@ -13,7 +13,7 @@ public class TicTacToe {
         Player ai = new AI(new EvaluationState());
         Player ai1 = new AI(new VladsEval());
 
-        Game game = new Game(ai1, human);
+        Game game = new Game(ai, human);
         game.playGame(15000);
     }
 }
