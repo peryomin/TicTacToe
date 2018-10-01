@@ -25,7 +25,7 @@ public class StateTest {
         8 [ ][o][x][ ][ ][ ][ ][ ][ ][x]
         9 [ ][x][ ][ ][ ][o][o][o][o][ ]
         */
-        State state = new State();
+        /*State state = new State();
         int player = state.getPlayerToMove();
         state = state.applyMove(new Move(8, 9)).applyMove(new Move(9, 8))
                 .applyMove(new Move(7, 9)).applyMove(new Move(9, 7))
@@ -56,23 +56,47 @@ public class StateTest {
         assertEquals(player + 1, state.applyMove(new Move(5, 5)).isTerminal());
         assertEquals(player + 1, state.applyMove(new Move(4, 4)).isTerminal());
         assertEquals(player + 1, state.applyMove(new Move(9, 9)).isTerminal());
-        assertEquals(player + 1, state.applyMove(new Move(4, 3)).isTerminal());
+        assertEquals(player + 1, state.applyMove(new Move(4, 3)).isTerminal());*/
     }
 
     @Test
-    public void cancelMove() {
+    public void makeTakeMoveTest() {
         State state = new State();
+        state.makeMove(new Move(2, 2));
         int player = state.getPlayerToMove();
+        long hash;
+        int ply;
 
+        hash = state.getHash();
+        ply = state.getPly();
         state.makeMove(new Move(1, 1));
         assertEquals(player + 1, state.getField()[1][1]);
+        player ^= 1;
+        assertEquals(player, state.getPlayerToMove());
+
         state.takeMove(new Move(1, 1));
         assertEquals(State.EMPTY_CELL, state.getField()[1][1]);
+        player ^= 1;
+        assertEquals(player, state.getPlayerToMove());
+
+        assertEquals(hash, state.getHash());
+        assertEquals(ply, state.getPly());
 
         Minimax minimax = new Minimax(new EvaluationState());
         State correctState = new State(state);
 
-        minimax.iterativeDeepening(state, 5000);
+        long before = System.currentTimeMillis();
+        minimax.iterativeDeepening(state, 5000000);
+        state.makeMove(new Move(9,9));
+        state.makeMove(new Move(8,8));
+        minimax.iterativeDeepening(state, 5000000);
+        long after = System.currentTimeMillis();
+        System.out.println("Time for move: " + ((after - before) / 1000.0));
+
+        state.takeMove(new Move(8,8));
+        state.takeMove(new Move(9,9));
+        assertEquals(hash, state.getHash());
+        assertEquals(ply, state.getPly());
 
         for (int i = 0; i < State.N; i++) {
             for (int j = 0; j < State.N; j++) {

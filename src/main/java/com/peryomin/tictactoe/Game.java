@@ -18,13 +18,15 @@ public class Game {
      * @return            code of game state
      */
     public int playGame(long timeForMove) {
-        // bla bla
+        currentState.printState();
+
         while (currentState.isTerminal() == 0) {
             // ask current player for a move, update current state
             int curPlayer = currentState.getPlayerToMove();
             System.out.printf("Turn: %s\n", curPlayer == 0 ? "cross" : "zero");
             Move move = players[curPlayer].getMove(currentState, timeForMove);
-            currentState = currentState.applyMove(move);
+            //currentState = currentState.applyMove(move);
+            currentState.makeMove(move);
             currentState.printState();
         }
         int result = currentState.isTerminal();

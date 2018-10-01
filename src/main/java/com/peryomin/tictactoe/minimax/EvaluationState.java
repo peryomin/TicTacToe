@@ -11,9 +11,9 @@ public class EvaluationState implements EvaluationFunction {
         if (stateCode == 3) {
             return 0;
         } else if (stateCode == 1) {
-            return Minimax.MAX_SCORE - depth;
+            return Minimax.MAX_SCORE - state.getPly();
         } else if (stateCode == 2) {
-            return Minimax.MIN_SCORE + depth;
+            return Minimax.MIN_SCORE + state.getPly();
         }
         int[][] field = state.getField();
         return evalFieldForPlayer(field, CROSS) - evalFieldForPlayer(field, ZERO);
