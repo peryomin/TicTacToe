@@ -5,6 +5,12 @@ import main.java.com.peryomin.tictactoe.State;
 import static main.java.com.peryomin.tictactoe.State.*;
 
 public class EvaluationState implements EvaluationFunction {
+    int[] coeffs;
+
+    public void setCoeffs(int[] coeffs) {
+        this.coeffs = coeffs;
+    }
+
     @Override
     public int evalState(State state, int depth) {
         int stateCode = state.isTerminal();
@@ -141,7 +147,8 @@ public class EvaluationState implements EvaluationFunction {
                     emptyCellsNearPlayerCells++;
                 }
             }
-            evalScore += 8 * cellsInCenter + 4 * almostFourInARow + 3 * almostThreeInARow + 4 + twoInARow + 5 + threeInARow + 5 * emptyCellsNearPlayerCells;
+            evalScore += coeffs[0] * cellsInCenter + coeffs[1] * almostFourInARow + coeffs[2] * almostThreeInARow +
+                    coeffs[3] * twoInARow + coeffs[4] * threeInARow + coeffs[5] * emptyCellsNearPlayerCells;
         }
         return evalScore;
     }

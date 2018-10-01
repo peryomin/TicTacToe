@@ -17,25 +17,35 @@ public class Game {
      * @param timeForMove time for one move in milliseconds
      * @return            code of game state
      */
-    public int playGame(long timeForMove) {
-        currentState.printState();
+    public int playGame(long timeForMove, boolean printState) {
+        if (printState) {
+            currentState.printState();
+        }
 
         while (currentState.isTerminal() == 0) {
             // ask current player for a move, update current state
             int curPlayer = currentState.getPlayerToMove();
-            System.out.printf("Turn: %s\n", curPlayer == 0 ? "cross" : "zero");
+            if (printState) {
+                System.out.printf("Turn: %s\n", curPlayer == 0 ? "cross" : "zero");
+            }
             Move move = players[curPlayer].getMove(currentState, timeForMove);
             //currentState = currentState.applyMove(move);
             currentState.makeMove(move);
-            currentState.printState();
+            if (printState) {
+                currentState.printState();
+            }
         }
         int result = currentState.isTerminal();
-        if (result == 3) {
-            System.out.println("Draw.");
-        } else {
-            System.out.printf("Winner: %s\n", result == 1 ? "cross" : "zero");
-            currentState.printWinnerCombo();
+
+        if (printState) {
+            if (result == 3) {
+                System.out.println("Draw.");
+            } else {
+                System.out.printf("Winner: %s\n", result == 1 ? "cross" : "zero");
+                currentState.printWinnerCombo();
+            }
         }
+
         return result;
     }
 
