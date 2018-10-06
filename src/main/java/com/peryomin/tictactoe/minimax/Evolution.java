@@ -5,6 +5,9 @@ import main.java.com.peryomin.tictactoe.players.AI;
 import main.java.com.peryomin.tictactoe.players.Player;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class Evolution {
@@ -14,6 +17,7 @@ public class Evolution {
     private List<Gen> population;
     private Random r;
     private String fileName;
+    private static String coeffSeparator = "\t";
 
     public Evolution(int coeffNum, int populationSize, int gamesPerRound) {
         this.coeffNum = coeffNum;
@@ -41,19 +45,20 @@ public class Evolution {
             Gen from = population.get(i);
             Gen to = population.get(n - i - 1);
             to.setCoeffs(from.getMutatedCoeffs());
+            to.generation = 1;
         }
     }
 
-    private void playRound(EvaluationState crossEvalFunc, EvaluationState zeroEvalFunc) {
+    private void playRound(EvaluationState crossEvalFunc, VladsEval zeroEvalFunc) {
         Player crossPlayer = new AI(crossEvalFunc);
         Player zeroPlayer = new AI(zeroEvalFunc);
 
         for (int i = 0; i < population.size() - 1; i++) {
             for (int j = i + 1; j < population.size(); j++) {
                 Gen crossGen = population.get(i);
-                Gen zeroGen = population.get(i);
+                Gen zeroGen = population.get(j);
                 crossEvalFunc.setCoeffs(crossGen.coeffs);
-                zeroEvalFunc.setCoeffs(zeroGen.coeffs);
+                //zeroEvalFunc.setCoeffs(zeroGen.coeffs);
                 Game game = new Game(crossPlayer, zeroPlayer);
 
                 int result = game.playGame(100, false);
@@ -63,10 +68,14 @@ public class Evolution {
                     zeroGen.score += 1;
                 } else if (result == 1) {
                     crossGen.score += 3;
-                } else {
+                } else if (result == 2) {
                     zeroGen.score += 3;
                 }
             }
+        }
+
+        for (Gen gen : population) {
+            gen.generation++;
         }
     }
 
@@ -74,12 +83,24 @@ public class Evolution {
         // random init / read from file
         initDataSource();
         EvaluationState crossEvalFunc = new EvaluationState();
-        EvaluationState zeroEvalFunc = new EvaluationState();
+        VladsEval zeroEvalFunc = new VladsEval();
+        int roundCounter = 0;
 
         while(true) {
+            roundCounter++;
+
+            copyFile("round" + roundCounter + "gen.txt");
+
             // play round
+            long beforeRoundTime = System.currentTimeMillis();
             playRound(crossEvalFunc, zeroEvalFunc);
-            System.out.println("round played");
+            long afterRoundTime = System.currentTimeMillis();
+
+            System.out.println("The round " + roundCounter + " is over.");
+            System.out.println("Time for round: " + ((afterRoundTime - beforeRoundTime) / 1000.0));
+            writeToLog("Time for round " + roundCounter + ": "
+                    + ((afterRoundTime - beforeRoundTime) / 1000.0) + " sec");
+
             // sort gens
             population.sort((x, y) -> y.score - x.score);
 
@@ -88,6 +109,11 @@ public class Evolution {
 
             // write to file
             updateDataSource();
+
+            // reset score
+            for (Gen gen : population) {
+                gen.score = 0;
+            }
         }
     }
 
@@ -106,7 +132,7 @@ public class Evolution {
 
                 population.clear();
                 while ((line = bufRead.readLine()) != null) {
-                    String[] fileCoeffs = line.split(" ");
+                    String[] fileCoeffs = line.split(coeffSeparator);
                     int[] coeffs = new int[coeffNum];
 
                     for (int i = 0; i < fileCoeffs.length - 2; i++) {
@@ -144,6 +170,26 @@ public class Evolution {
         }
         fileWriter.flush();
         fileWriter.close();
+    }
+
+    private void writeToLog(String line) {
+        try {
+            File log = new File("log.txt");
+            log.createNewFile();
+            Files.write(log.toPath(), (line + System.getProperty("line.separator")).getBytes(),
+                    StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void copyFile(String copyFileName) {
+        try {
+            Files.copy(new File(fileName).toPath(),
+                    (new File(copyFileName).toPath()), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class Gen {
@@ -187,9 +233,9 @@ public class Evolution {
             StringBuilder result = new StringBuilder();
 
             for (int coeff: coeffs) {
-                result.append(coeff).append(" ");
+                result.append(coeff).append(coeffSeparator);
             }
-            result.append(generation).append(" ");
+            result.append(generation).append(coeffSeparator);
             result.append(score);
 
             return result.toString();
