@@ -114,7 +114,7 @@ public class Minimax {
         Move bestMove = null;
         for (int depth = 1; depth < MAX_DEPTH; depth++) {
             Move currentMove = rootMinimax(state, depth);
-            System.out.println("depth: " + depth);
+            //System.out.println("depth: " + depth);
             if (!isEnoughTime()) {
                 return bestMove;
             }
